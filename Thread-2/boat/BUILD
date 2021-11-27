@@ -11,6 +11,7 @@ cc_library(
 	visibility = [
 		"//visibility:public",
 	],
+    
 )
 
 cc_library(
@@ -22,11 +23,15 @@ cc_library(
         "boat.h",
         ],
 	deps = [
-        ":boatGrader_lib"
+        ":boatGrader_lib",
+        "//semaphore:semaphore"
     ],
 	visibility = [
 		"//visibility:public",
 	],
+    linkopts = [
+        "-pthread",
+    ],
 )
 
 cc_binary(

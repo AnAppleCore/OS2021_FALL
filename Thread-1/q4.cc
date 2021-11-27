@@ -11,14 +11,16 @@
 #include "lib/instruction.h"
 
 #include "scheduler/scheduler.h"
+
+
 int main(int argc, char *argv[]) {
 
     
     
     
-    proj1::Scheduler* scheduler = new proj1::Scheduler("data/q2.in","data/q2.in","data/q2_instruction.tsv");
-    proj1::AutoTimer timer("q2");
+    proj1::Scheduler* scheduler = new proj1::Scheduler("data/q4.in","data/q4.in","data/q4_instruction.tsv");
+    proj1::AutoTimer timer("q4");
     scheduler -> execute_all();
-    scheduler -> write_to_stdout();
+    //scheduler -> write_to_stdout();
     return 0;
 }

@@ -16,5 +16,10 @@ cc_binary(
     ],
     linkopts = [
         "-pthread",
-    ]
+    ],
+    data = [
+        "data/example.in",
+        "data/trivial.in",
+        "data/test.in"
+    ],
 )

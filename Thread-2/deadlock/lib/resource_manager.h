@@ -4,6 +4,7 @@
 #include <map>
 #include <mutex>
 #include <thread>
+#include <vector>
 #include <condition_variable>
 #include "thread_manager.h"
 
@@ -28,8 +29,15 @@ private:
     std::map<RESOURCE, std::mutex> resource_mutex;
     std::map<RESOURCE, std::condition_variable> resource_cv;
     ThreadManager *tmgr;
+
+    // Banker's Algorithm for Deadlock Prevention
+    std::mutex thread_mutex;
+    std::condition_variable thread_cv;
+    std::map<std::thread::id, std::map<RESOURCE, int>> max, allocated;
+    bool is_complete(std::thread::id);
+    bool safe_detect(std::thread::id, RESOURCE, int);
 };
 
-}  // namespce: proj2
+}  // namespace: proj2
 
 #endif

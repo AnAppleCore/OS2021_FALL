@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+
 namespace proj1 {
 
 enum EMBEDDING_ERROR {
@@ -18,7 +19,7 @@ public:
     Embedding(int, double*);
     Embedding(int, std::string);
     Embedding(Embedding*);
-    ~Embedding() { delete []this->data; }
+    //~Embedding() { delete []this->data; }
     double* get_data() { return this->data; }
     int get_length() { return this->length; }
     void update(Embedding*, double);
@@ -34,13 +35,21 @@ public:
     Embedding operator/(const Embedding&);
     Embedding operator/(const double);
     bool operator==(const Embedding&);
+
+    //void calc_gradient_and_set(Embedding*, Embedding*, int);
+
 private:
     int length;
     double* data;
 };
 
 using EmbeddingMatrix = std::vector<Embedding*>;
+
 using EmbeddingGradient = Embedding;
+
+
+
+
 
 class EmbeddingHolder{
 public:

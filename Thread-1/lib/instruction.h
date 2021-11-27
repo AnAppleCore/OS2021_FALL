@@ -7,9 +7,9 @@
 namespace proj1 {
 
 enum InstructionOrder {
-    INIT_EMB = 0,
-    UPDATE_EMB,
-    RECOMMEND
+    INIT_EMB =     0,
+    UPDATE_EMB, // 1
+    RECOMMEND   // 2
 };
 
 struct Instruction {
@@ -20,7 +20,7 @@ struct Instruction {
 
 using Instructions = std::vector<Instruction>;
 
-Instructions read_instructrions(std::string);
+Instructions read_instructions(std::string);
 
 } // namespace proj1
 #endif  // THREAD_LIB_INSTRUCTION_H_
