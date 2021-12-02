@@ -11,29 +11,23 @@ namespace proj3 {
     }
     void PageFrame::WriteDisk(std::string filename) {
         // write page content into disk files
-        //std::cout <<"WriteDisk: "<<filename<<std::endl;
         const char* name = filename.data();
         FILE * pagefile;
         pagefile = fopen(name, "r+b");
         if (pagefile == NULL) {
-            //std::cout <<"WriteDisk error "<<std::endl;
             throw std::runtime_error ("Error openning file "+ filename + "!");
         }
-        //std::cout <<"WriteDisk create file: "<<filename<<std::endl;
         fwrite(this -> mem, sizeof(int), PageSize, pagefile);
-        //std::cout <<"WriteDisk write file: "<<filename<<std::endl;
         fclose(pagefile);
     }
     void PageFrame::ReadDisk(std::string filename) {
         // read page content from disk files
-        //std::cout <<"ReadDisk: "<<filename<<std::endl;
         const char* name = filename.data();
         FILE * pagefile;
         pagefile = fopen(name, "rb");
 
         if (pagefile == NULL) {
             //file not created yet
-            //std::cout <<"ReadDisk: Create File: "<<filename<<std::endl;
             pagefile = fopen(name, "wb+");//create file
             fclose(pagefile);
             this -> Clear();
@@ -42,22 +36,19 @@ namespace proj3 {
         }
         size_t result = fread(this -> mem, sizeof(int), PageSize, pagefile);
         if (result != PageSize) {
-            //std::cout <<"ReadDisk Error: result "<<result <<std::endl;
             throw std::runtime_error ("Error reading file "+ filename + "!");
         }
         fclose(pagefile);
     }
-
     void PageFrame::Clear() {
-        //std::cout <<"Clear Memory"<<std::endl;
         for (size_t i = 0; i < PageSize; i ++){
             this -> mem[i] = 0;
         }
     }
 
+
     void ClearDisk(std::string filename) {
         // write zeros into disk files
-        //std::cout <<"Clear Disk "<< filename<<std::endl;
         const char* name = filename.data();
         FILE * pagefile;
         pagefile = fopen(name, "r+b");
@@ -69,6 +60,8 @@ namespace proj3 {
         delete zeros;
         fclose(pagefile);
     }
+
+
     PageInfo::PageInfo(){
         this -> holder = -1;
         this -> virtual_page_id = -1;
@@ -115,7 +108,6 @@ namespace proj3 {
     }
     void MemoryManager::PageOut(int physical_page_id){
         //swap out the physical page with the indx of 'physical_page_id' out into a disk file
-        //std::cout <<"Page out PID: "<< physical_page_id<<std::endl;
         if( this -> modified[physical_page_id] ) {
             int holder = this -> page_info[physical_page_id].GetHolder();
             int vid = this -> page_info[physical_page_id].GetVid();
@@ -128,7 +120,6 @@ namespace proj3 {
     }
     void MemoryManager::PageIn(int array_id, int virtual_page_id, int physical_page_id){
         //swap the target page from the disk file into a physical page with the index of 'physical_page_id" out
-        //std::cout <<"PageIn FILENAME: "<<filename(array_id, virtual_page_id)<<" PID "<<physical_page_id<<std::endl;
         this -> PageOut(physical_page_id);
         std::string name = filename(array_id, virtual_page_id);
         this -> mem[physical_page_id] . ReadDisk(name);
@@ -145,7 +136,6 @@ namespace proj3 {
         }
         if ( i < int(this -> mma_sz)) {
             //A free page found
-            //std::cout << "Found free page "<<i<<std::endl;
             PageIn(array_id, virtual_page_id, i);
             this -> page_map[array_id][virtual_page_id] = i;
             this -> free[i] = false;
@@ -247,7 +237,6 @@ namespace proj3 {
         // when an application requires for memory, 
         //create an ArrayList and record mappings
         //from its virtual memory space to the physical memory space
-        //std::cout << "Allocate an arrayList "<<this -> next_array_id<<std::endl;
         this -> num_max_pages[this -> next_array_id] = int(sz);
         this -> next_array_id ++;
         ArrayList* list = new ArrayList(sz, this, this -> next_array_id - 1);
@@ -257,7 +246,6 @@ namespace proj3 {
     void MemoryManager::Release(ArrayList* arr){
         // an application will call release() function when destroying its arrayList
         // release the virtual space of the arrayList and erase the corresponding mappings
-        //std::cout << "Release an arrayList "<<arr -> array_id<<std::endl;
         int array_id = arr -> array_id;
         std::map<int, int>::iterator it = this -> page_map[array_id].begin();
         for (; it != this -> page_map[array_id].end(); ++ it) {
@@ -273,7 +261,6 @@ namespace proj3 {
             }
         }
     }
-
     
 
     std::string filename(int holder, int vid) {

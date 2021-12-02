@@ -58,7 +58,6 @@ public:
     void Release(ArrayList*);
     ~MemoryManager();
 
-    
 private:
     std::map<int, std::map<int, int>> page_map;
     // // mapping from ArrayList's virtual page # to physical page #
@@ -72,8 +71,7 @@ private:
     void PageReplace(int array_id, int virtual_page_id);
     
 
-    //extra states//
-    
+    //extra states
 
     //states of the memory
     bool* free;
@@ -82,9 +80,10 @@ private:
 
     ReplacementPolicy policy;
     int clock_head = 0;
-    //states of the array_list
     std::map<int, int> num_max_pages;
     //array_id -> number of available pages
+
+
     //extra functions
 };
 

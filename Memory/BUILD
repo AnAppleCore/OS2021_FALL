@@ -15,7 +15,4 @@ cc_test(
     linkopts = [
         "-pthread",
     ],
-    data = [
-        "disk",
-    ],
 )
