@@ -1,5 +1,6 @@
 #include "memory_manager.h"
 
+
 #include "array_list.h"
 
 namespace proj3 {
@@ -11,54 +12,42 @@ namespace proj3 {
     }
     void PageFrame::WriteDisk(std::string filename) {
         // write page content into disk files
-        const char* name = filename.data();
-        FILE * pagefile;
-        pagefile = fopen(name, "r+b");
-        if (pagefile == NULL) {
-            throw std::runtime_error ("Error openning file "+ filename + "!");
+        std::ofstream ofs(filename);
+        if (ofs.is_open()) {
+            for (int i = 0; i < int(PageSize); i ++) {
+                ofs << std::to_string(this -> mem[i]) <<"\n";
+            }
+            ofs.close();
+        } else {
+            throw std::runtime_error("error openning file "+filename+"!");
         }
-        fwrite(this -> mem, sizeof(int), PageSize, pagefile);
-        fclose(pagefile);
     }
     void PageFrame::ReadDisk(std::string filename) {
         // read page content from disk files
-        const char* name = filename.data();
-        FILE * pagefile;
-        pagefile = fopen(name, "rb");
-
-        if (pagefile == NULL) {
-            //file not created yet
-            pagefile = fopen(name, "wb+");//create file
-            fclose(pagefile);
+        std::ifstream ifs(filename);
+        if (!ifs.is_open()) {
             this -> Clear();
-            this -> WriteDisk(name);
+            ifs.close();
+            std::ofstream ofs(filename);
+            for (int i = 0; i < int(PageSize); i ++) {
+                ofs <<"0\n";
+            }
+            ofs.close();
             return;
+        } else {
+            std::string line;
+            int length = 0;
+            while (std::getline(ifs, line) && length < int(PageSize)) {
+                this -> mem[length] = atoi(line.data());
+                length ++ ;
+            }
+            ifs.close();
         }
-        size_t result = fread(this -> mem, sizeof(int), PageSize, pagefile);
-        if (result != PageSize) {
-            throw std::runtime_error ("Error reading file "+ filename + "!");
-        }
-        fclose(pagefile);
     }
     void PageFrame::Clear() {
         for (size_t i = 0; i < PageSize; i ++){
             this -> mem[i] = 0;
         }
-    }
-
-
-    void ClearDisk(std::string filename) {
-        // write zeros into disk files
-        const char* name = filename.data();
-        FILE * pagefile;
-        pagefile = fopen(name, "r+b");
-        if (pagefile == NULL) {
-            throw std::runtime_error ("Error openning file "+ filename + "!");
-        }
-        int* zeros = new int[PageSize];
-        fwrite(zeros, sizeof(int), PageSize, pagefile);
-        delete zeros;
-        fclose(pagefile);
     }
 
 
@@ -78,10 +67,9 @@ namespace proj3 {
         this -> holder = -1;
         this -> virtual_page_id = -1;
     }
-
     int PageInfo::GetHolder(){return this -> holder;}
     int PageInfo::GetVid(){return this -> virtual_page_id;}
-    
+
 
     MemoryManager::MemoryManager(size_t sz, ReplacementPolicy Policy){
         this -> mma_sz = sz;
@@ -98,7 +86,12 @@ namespace proj3 {
         }
         this -> policy = Policy;
     }
-    MemoryManager::~MemoryManager(){        
+    MemoryManager::~MemoryManager(){  
+        
+        for (auto it = this -> filename_exist.cbegin(); it != this -> filename_exist.cend(); ++it) {
+            if ((*it).second)
+                remove(((*it).first).c_str());
+        }
 
         delete this -> free;
         delete this -> used;
@@ -106,28 +99,19 @@ namespace proj3 {
         delete this -> mem;
         delete this -> page_info;
     }
-    void MemoryManager::PageOut(int physical_page_id){
-        //swap out the physical page with the indx of 'physical_page_id' out into a disk file
-        if( this -> modified[physical_page_id] ) {
-            int holder = this -> page_info[physical_page_id].GetHolder();
-            int vid = this -> page_info[physical_page_id].GetVid();
-            std::string name = filename(holder, vid);
-            this -> mem[physical_page_id] . WriteDisk(name);
-        }
-        this -> free[physical_page_id] = true;
-        this -> used[physical_page_id] = false;
-        this -> modified[physical_page_id] = false;
+    void MemoryManager::PageOut(int physical_page_id, std::string filename) {
+
+        this -> mem[physical_page_id].WriteDisk(filename);
+        this -> filename_exist[filename] = true;
+        
     }
     void MemoryManager::PageIn(int array_id, int virtual_page_id, int physical_page_id){
-        //swap the target page from the disk file into a physical page with the index of 'physical_page_id" out
-        this -> PageOut(physical_page_id);
-        std::string name = filename(array_id, virtual_page_id);
-        this -> mem[physical_page_id] . ReadDisk(name);
-        this -> free[physical_page_id] = false;
-        this -> used[physical_page_id] = false;
-        this -> modified[physical_page_id] = false;
+
+        std::string name = file_name(array_id, virtual_page_id);
+        this -> mem[physical_page_id].ReadDisk(name);
+        this -> filename_exist[name] = true;
     }
-    void MemoryManager::PageReplace(int array_id, int virtual_page_id){
+    int MemoryManager::PageReplace(int array_id, int virtual_page_id, bool is_write,  std::string& output_filename){
         //implement your page replacement policy here
         //try to find a free page
         int i;
@@ -136,45 +120,94 @@ namespace proj3 {
         }
         if ( i < int(this -> mma_sz)) {
             //A free page found
-            PageIn(array_id, virtual_page_id, i);
+
             this -> page_map[array_id][virtual_page_id] = i;
             this -> free[i] = false;
-            this -> used[i] = false;
-            this -> modified[i] = false;
-
+            this -> used[i] = true;
+            this -> modified[i] = is_write;
             this -> page_info[i].SetInfo(array_id, virtual_page_id);
-            return;
+            //////////////////////////////////
+            int times_to_wait = 0;
+            this -> resource_queue[page_name(i)].push(array_id);
+            if (this -> resource_queue[page_name(i)].size() > 1) {
+                times_to_wait ++;
+            }
+            this -> resource_queue[file_name(array_id, virtual_page_id)].push(array_id);
+            if (this -> resource_queue[file_name(array_id, virtual_page_id)].size() > 1){
+                times_to_wait ++;
+            }
+            this -> data_lock.unlock();
+            for (int j = 0; j < times_to_wait; j ++) {
+                this -> sp[array_id].P();
+            }
+            //////////////////////////////////
+
+            PageIn(array_id, virtual_page_id, i);
+            return i;
         } else {
             if (this -> policy == CLOCK) {
                 //clock algorithm
                 while(true) {
                     if (this -> used[this -> clock_head]) {
-                        this -> used[this ->clock_head] = false;
-                        this -> clock_head = (this -> clock_head + 1)% int (this -> mma_sz);
+                        this -> used[this -> clock_head] = false;
+                        this -> clock_head = (this -> clock_head + 1) % int (this -> mma_sz);
                     } else {
                         break;
                     }
                 }
             }
-            //update page_map
-            int old_holder = this -> page_info[this -> clock_head].GetHolder();
-            int old_vid = this -> page_info[this -> clock_head].GetVid();
-            //this -> page_map[old_holder][old_vid] = -1;//Page table cleared
-            this -> page_map[array_id][virtual_page_id] = this -> clock_head;
-            //evict page
-            this -> PageIn(array_id, virtual_page_id, this -> clock_head);
-            this -> page_info[this -> clock_head].SetInfo(array_id, virtual_page_id);
-            this -> page_map[old_holder][old_vid] = -1;
-            this -> free[this -> clock_head] = false;
-            this -> used[this -> clock_head] = false;
-            this -> modified[this -> clock_head] = false;
-            this -> clock_head = (this -> clock_head + 1)% int (this -> mma_sz);
             
+            int pid = this -> clock_head;
+            this -> clock_head = (this -> clock_head + 1) % int(this ->mma_sz);
+
+            //update page_map
+            int old_holder = this -> page_info[pid].GetHolder();
+            int old_vid = this -> page_info[pid].GetVid();
+            //this -> page_map[old_holder][old_vid] = -1;//Page table cleared
+            bool dirty = this -> modified[pid];
+
+            this -> page_info[pid].SetInfo(array_id, virtual_page_id);
+            this -> page_map[array_id][virtual_page_id] = pid;
+            this -> page_map[old_holder][old_vid] = -1;
+            this -> free[pid] = false;
+            this -> used[pid] = true;
+            this -> modified[pid] = is_write;
+            if(dirty)output_filename = file_name(old_holder, old_vid);
+
+            //////////////////////////////////
+            int times_to_wait = 0;
+            this -> resource_queue[page_name(pid)].push(array_id);
+            if (this -> resource_queue[page_name(pid)].size() > 1){
+                times_to_wait ++;
+            }
+            this -> resource_queue[file_name(array_id, virtual_page_id)].push(array_id);
+            if (this -> resource_queue[file_name(array_id, virtual_page_id)].size() > 1){
+                times_to_wait ++;
+            }
+            if (dirty) {
+                this -> resource_queue[output_filename].push(array_id);
+                if (this -> resource_queue[output_filename].size() > 1) {
+                    times_to_wait ++;
+                }
+            }
+            this -> data_lock.unlock();
+            for (int j = 0; j < times_to_wait; j ++) {
+                this -> sp[array_id].P();
+            }
+            //////////////////////////////////
+
+            if(dirty)this -> PageOut(pid, output_filename);
+            this -> PageIn(array_id, virtual_page_id, pid);
+            return pid;
         }
 
     }
     int MemoryManager::ReadPage(int array_id, int virtual_page_id, int offset){
         // for arrayList of 'array_id', return the target value on its virtual space
+        //////////////////////////////////
+        this -> data_lock.lock();
+        //////////////////////////////////
+
         std::map<int, int> empty;
         bool in_memory = true;
         if (this -> page_map.count(array_id) == 0) {
@@ -185,27 +218,70 @@ namespace proj3 {
             in_memory = false;
             //virtual page is first used
             if (int(this -> page_map[array_id].size()) == this -> num_max_pages[array_id]) {
-                throw std::runtime_error("Array List exceeds the allocated space");
+                //throw std::runtime_error("Array List exceeds the allocated space!");
             }
         } else if (this -> page_map[array_id][virtual_page_id] == -1) {
             in_memory = false;
         }
         
         if (in_memory) {
+            
             int pid = this -> page_map[array_id][virtual_page_id];
-            int result = (this -> mem[pid])[offset];
             this -> used[pid] = true;
+
+            //////////////////////////////////
+            this -> resource_queue[page_name(pid)].push(array_id);
+            int queue_size = this -> resource_queue[page_name(pid)].size();
+            this -> data_lock.unlock();
+            if (queue_size > 1) {
+                this -> sp[array_id].P();
+            }
+            //////////////////////////////////
+            int result = (this -> mem[pid])[offset];
+            //////////////////////////////////
+            this -> data_lock.lock();
+            this -> resource_queue[page_name(pid)].pop();
+            if (this -> resource_queue[page_name(pid)].size() > 0) {
+                this -> sp[this -> resource_queue[page_name(pid)].front()].V();
+            }
+            this -> data_lock.unlock();
+            //////////////////////////////////
             return result; 
         } else {
-            this -> PageReplace(array_id, virtual_page_id);
-            int pid = this -> page_map[array_id][virtual_page_id];
+            std::string input_filename = file_name(array_id, virtual_page_id);
+            std::string output_filename;
+
+            int pid = this -> PageReplace(array_id, virtual_page_id, false, output_filename);
+            
             int result = (this -> mem[pid])[offset];
-            this -> used[pid] = true;
+            //////////////////////////////////
+            this -> data_lock.lock();
+            this -> resource_queue[page_name(pid)].pop();
+            if (this -> resource_queue[page_name(pid)].size() > 0) {
+                this -> sp[this -> resource_queue[page_name(pid)].front()].V();
+            }
+            this -> resource_queue[input_filename].pop();
+            if (this -> resource_queue[input_filename].size() > 0) {
+                this -> sp[this -> resource_queue[input_filename].front()].V();
+            }
+
+            if (output_filename.size() > 0) {
+                this -> resource_queue[output_filename].pop();
+                if (this -> resource_queue[output_filename].size() > 0) {
+                    this -> sp[this -> resource_queue[output_filename].front()].V();
+                }
+            }
+            this -> data_lock.unlock();
+            //////////////////////////////////
             return result; 
         }
     }
     void MemoryManager::WritePage(int array_id, int virtual_page_id, int offset, int value){
         // for arrayList of 'array_id', write 'value' into the target position on its virtual space
+        //////////////////////////////////
+        this -> data_lock.lock();
+        //////////////////////////////////
+        
         std::map<int, int> empty;
         bool in_memory = true;
         if (this -> page_map.count(array_id) == 0) {
@@ -220,16 +296,55 @@ namespace proj3 {
         
         if (in_memory) {
             int pid = this -> page_map[array_id][virtual_page_id];
-            (this -> mem[pid])[offset] = value;
             this -> used[pid] = true;
             this -> modified[pid] = true;
+            
+            //////////////////////////////////
+            this -> resource_queue[page_name(pid)].push(array_id);
+            int queue_size = this -> resource_queue[page_name(pid)].size();
+            this -> data_lock.unlock();
+            if (queue_size > 1) {
+                this -> sp[array_id].P();
+            }
+            //////////////////////////////////
+
+            //datalock -> pagelock
+            (this -> mem[pid])[offset] = value;
+
+            //////////////////////////////////
+            this -> data_lock.lock();
+            this -> resource_queue[page_name(pid)].pop();
+            if (this -> resource_queue[page_name(pid)].size() > 0) {
+                this -> sp[this -> resource_queue[page_name(pid)].front()].V();
+            }
+            this -> data_lock.unlock();
+            ///////////////////////
+            
             return; 
         } else {
-            this -> PageReplace(array_id, virtual_page_id);
-            int pid = this -> page_map[array_id][virtual_page_id];
+            std::string input_filename = file_name(array_id, virtual_page_id);
+            std::string output_filename ;
+            int pid = this -> PageReplace(array_id, virtual_page_id, true, output_filename);//datalock -> pagelock
             (this -> mem[pid])[offset] = value;
-            this -> used[pid] = true;
-            this -> modified[pid] = true;
+            //////////////////////////////////
+            this -> data_lock.lock();
+            this -> resource_queue[page_name(pid)].pop();
+            if (this -> resource_queue[page_name(pid)].size() > 0) {
+                this -> sp[this -> resource_queue[page_name(pid)].front()].V();
+            }
+            this -> resource_queue[input_filename].pop();
+            if (this -> resource_queue[input_filename].size() > 0) {
+                this -> sp[this -> resource_queue[input_filename].front()].V();
+            }
+
+            if (output_filename .size() > 0) {
+                this -> resource_queue[output_filename].pop();
+                if (this -> resource_queue[output_filename].size() > 0) {
+                    this -> sp[this -> resource_queue[output_filename].front()].V();
+                }
+            }
+            this -> data_lock.unlock();
+            //////////////////////////////////
             return;
         }
     }
@@ -237,22 +352,36 @@ namespace proj3 {
         // when an application requires for memory, 
         //create an ArrayList and record mappings
         //from its virtual memory space to the physical memory space
-        this -> num_max_pages[this -> next_array_id] = int(sz);
+        //datalock
+        this -> data_lock.lock();
+        this -> num_max_pages[this -> next_array_id] = (int(sz) + int(PageSize) - 1)/int(PageSize);
         this -> next_array_id ++;
         ArrayList* list = new ArrayList(sz, this, this -> next_array_id - 1);
+        //data unlock
+        
+        this -> data_lock.unlock();
         return list;
 
     }
     void MemoryManager::Release(ArrayList* arr){
         // an application will call release() function when destroying its arrayList
         // release the virtual space of the arrayList and erase the corresponding mappings
+
         int array_id = arr -> array_id;
+        //datalock
         std::map<int, int>::iterator it = this -> page_map[array_id].begin();
         for (; it != this -> page_map[array_id].end(); ++ it) {
             int vid = it -> first;
             int pid = it -> second;
-            const char* name = filename(array_id, vid).data();
-            remove(name);
+            std::string name = file_name(array_id, vid);
+            /*
+            std::ofstream ofs(name);
+            for(int i = 0; i < int(PageSize); i ++) {
+                ofs<<"0\n";
+            }
+            ofs.close();*/
+            remove(name.c_str());
+            this -> filename_exist[name] = false;
             if (pid != -1) {
                 this -> free[pid] = true;
                 this -> used[pid] = false;
@@ -260,12 +389,16 @@ namespace proj3 {
                 this -> page_info[pid].ClearInfo();
             }
         }
-    }
-    
-
-    std::string filename(int holder, int vid) {
-        return std::to_string(holder) +'_'+std::to_string(vid);
+        //data unlock
     }
 
-    
+
+    std::string file_name(int holder, int vid) {
+        return "f" + std::to_string(holder) +'_'+std::to_string(vid);
+    }
+
+    std::string page_name(int pid) {
+        return "p" + std::to_string(pid);
+    }
+
 } // namespce: proj3
