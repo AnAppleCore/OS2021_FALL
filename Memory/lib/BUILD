@@ -23,9 +23,31 @@ cc_library(
         "memory_manager.h",
         "array_list.h",
         ],
+    deps = [
+        "semaphore",
+    ],
 	visibility = [
 		"//visibility:public",
 	],
 )
 
+cc_library(
+    name = "semaphore",
+    srcs = [
+        "semaphore.cc",
+        ],
+    hdrs = [
+        "semaphore.h",
+        ],
+	visibility = [
+		"//visibility:public",
+	],
+    copts = [
+        "-O3",
+        "-std=c++11",
+    ],
+	linkopts = [
+        "-pthread",
+    ],
+)
 

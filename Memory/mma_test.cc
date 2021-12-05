@@ -12,7 +12,7 @@ class MMATest : public ::testing::Test {
  protected:
   void SetUp() override {
     mma = new proj3::MemoryManager(10);
-    workload_sz_1 = 10000; 
+    workload_sz_1 = 4000; 
     workload_sz_2 = 2000; 
     workload_sz_3 = 100; 
     workload_sz_4 = 2000;
@@ -101,7 +101,7 @@ TEST_F(MMATest,task3){
     }
 
 }
-/*
+
 void workload(proj3::MemoryManager * my_mma, size_t workload_sz){
     proj3::ArrayList* arr = my_mma->Allocate(workload_sz);
     for(unsigned long j = 0; j < workload_sz; j++)arr->Write(j, j);
@@ -119,7 +119,6 @@ TEST_F(MMATest,task4){
         t->join();
     }
 }
-*/
 
 } // namespace testing
 } // namespace proj3
