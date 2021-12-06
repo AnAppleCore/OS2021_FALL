@@ -4,19 +4,17 @@
 #include <assert.h>
 #include <stdio.h>
 #include <map>
+#include <mutex>
+#include <queue>
 #include <string>
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
 #include <fstream>
-
-#include <mutex>
+#include <iostream>
 #include <condition_variable>
-#include <queue>
 
 #include "semaphore.h"
-
-#include <iostream>
 
 #define PageSize 1024
 
@@ -57,7 +55,7 @@ enum ReplacementPolicy{
 class MemoryManager {
 public:
     // you should not modify the public interfaces used in tests
-    MemoryManager(size_t, ReplacementPolicy Policy = FIFO);
+    MemoryManager(size_t, ReplacementPolicy Policy = FIFO, bool Test_mode = false);
     int ReadPage(int array_id, int virtual_page_id, int offset);
     void WritePage(int array_id, int virtual_page_id, int offset, int value);
     ArrayList* Allocate(size_t);
@@ -67,27 +65,22 @@ public:
     
 private:
     std::map<std::string, int*> disk;
-
     std::map<int, std::map<int, int>> page_map;
     // mapping from ArrayList's virtual page # to physical page #
     PageFrame* mem; // physical pages, using 'PageFrame* mem' is also acceptable 
     PageInfo* page_info; // physical page info
-
     int next_array_id = 0;
     size_t mma_sz;
     void PageIn(int array_id, int virtual_page_id, int physical_page_id);
     void PageOut(int physical_page_id, std::string filename);
     int PageReplace(int array_id, int virtual_page_id, bool is_write, std::string& output_filename);
 
-
-    //extra states//
-
-
     //states of the memory
     bool* free;
     bool* used;
     bool* modified;
 
+    bool test_mode = false;
     ReplacementPolicy policy;
     int clock_head = 0;
     //states of the array_list
