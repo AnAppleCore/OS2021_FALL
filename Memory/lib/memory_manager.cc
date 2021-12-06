@@ -308,7 +308,6 @@ namespace proj3 {
             }
             //////////////////////////////////
 
-            //datalock -> pagelock
             (this -> mem[pid])[offset] = value;
 
             //////////////////////////////////
@@ -352,13 +351,12 @@ namespace proj3 {
         // when an application requires for memory, 
         //create an ArrayList and record mappings
         //from its virtual memory space to the physical memory space
-        //datalock
         this -> data_lock.lock();
+
         this -> num_max_pages[this -> next_array_id] = (int(sz) + int(PageSize) - 1)/int(PageSize);
         this -> next_array_id ++;
         ArrayList* list = new ArrayList(sz, this, this -> next_array_id - 1);
-        //data unlock
-        
+
         this -> data_lock.unlock();
         return list;
 
@@ -368,18 +366,12 @@ namespace proj3 {
         // release the virtual space of the arrayList and erase the corresponding mappings
 
         int array_id = arr -> array_id;
-        //datalock
+        this -> data_lock.lock();
         std::map<int, int>::iterator it = this -> page_map[array_id].begin();
         for (; it != this -> page_map[array_id].end(); ++ it) {
             int vid = it -> first;
             int pid = it -> second;
             std::string name = file_name(array_id, vid);
-            /*
-            std::ofstream ofs(name);
-            for(int i = 0; i < int(PageSize); i ++) {
-                ofs<<"0\n";
-            }
-            ofs.close();*/
             remove(name.c_str());
             this -> filename_exist[name] = false;
             if (pid != -1) {
@@ -389,7 +381,7 @@ namespace proj3 {
                 this -> page_info[pid].ClearInfo();
             }
         }
-        //data unlock
+        this -> data_lock.unlock();
     }
 
 
