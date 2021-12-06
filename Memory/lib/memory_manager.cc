@@ -1,6 +1,7 @@
+#include <chrono>
+#include <thread>
+
 #include "memory_manager.h"
-
-
 #include "array_list.h"
 
 namespace proj3 {
@@ -71,7 +72,7 @@ namespace proj3 {
     int PageInfo::GetVid(){return this -> virtual_page_id;}
 
 
-    MemoryManager::MemoryManager(size_t sz, ReplacementPolicy Policy){
+    MemoryManager::MemoryManager(size_t sz, ReplacementPolicy Policy, bool Test_mode){
         this -> mma_sz = sz;
         this -> mem = new PageFrame[sz];
         this -> page_info = new PageInfo[sz];
@@ -85,6 +86,7 @@ namespace proj3 {
             this -> modified[i] = false;
         }
         this -> policy = Policy;
+        this -> test_mode = Test_mode;
     }
     MemoryManager::~MemoryManager(){  
         
@@ -103,6 +105,8 @@ namespace proj3 {
 
         this -> mem[physical_page_id].WriteDisk(filename);
         this -> filename_exist[filename] = true;
+        if (this -> test_mode)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         
     }
     void MemoryManager::PageIn(int array_id, int virtual_page_id, int physical_page_id){
@@ -110,6 +114,9 @@ namespace proj3 {
         std::string name = file_name(array_id, virtual_page_id);
         this -> mem[physical_page_id].ReadDisk(name);
         this -> filename_exist[name] = true;
+        if (this -> test_mode)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     }
     int MemoryManager::PageReplace(int array_id, int virtual_page_id, bool is_write,  std::string& output_filename){
         //implement your page replacement policy here
