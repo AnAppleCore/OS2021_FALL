@@ -106,7 +106,7 @@ namespace proj3 {
         this -> mem[physical_page_id].WriteDisk(filename);
         this -> filename_exist[filename] = true;
         if (this -> test_mode)
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         
     }
     void MemoryManager::PageIn(int array_id, int virtual_page_id, int physical_page_id){
@@ -115,7 +115,7 @@ namespace proj3 {
         this -> mem[physical_page_id].ReadDisk(name);
         this -> filename_exist[name] = true;
         if (this -> test_mode)
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     }
     int MemoryManager::PageReplace(int array_id, int virtual_page_id, bool is_write,  std::string& output_filename){
