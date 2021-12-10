@@ -9,7 +9,7 @@
 #include "lib/memory_manager.h"
 
 // Modified from `mma_test.cc`, include tests required in Q3. 
-// 100ms `slow_function()` overhead each page replacement op. 
+// 10ms `slow_function()` overhead each page replacement op. 
 
 namespace proj3 {
 namespace testing{

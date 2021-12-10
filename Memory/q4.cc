@@ -9,7 +9,7 @@
 #include "lib/memory_manager.h"
 
 // Modified from `mma_test.cc`, include tests required in Q4. 
-// 100ms `slow_function()` overhead each page replacement op. 
+// 10ms `slow_function()` overhead each page replacement op. 
 
 namespace proj3 {
 namespace testing{
@@ -18,7 +18,7 @@ class Q4 : public ::testing::Test {
  protected:
   void SetUp() override {
     range = 10;
-    for (int i=1; i<=range; i++) {
+    for (int i=10; i<=10+range; i++) {
         // Use CLOCk algorithm as replacement policy
         mma_clock.push_back(new proj3::MemoryManager(i, CLOCK, true));
     }
@@ -27,7 +27,7 @@ class Q4 : public ::testing::Test {
     thread_num = 10;
   }
   void TearDown() override {
-      for (int i=0; i<range; i++){
+      for (int i=0; i<=range; i++){
           delete mma_clock[i];
       }
   }
@@ -63,10 +63,10 @@ int task4(proj3::MemoryManager * mma, size_t workload_sz_4, int thread_num) {
 }
 
 TEST_F(Q4,task4){
-    for (int i=0; i<range; i++){
+    for (int i=0; i<=range; i++){
         int dur = task4(mma_clock[i], workload_sz_4, thread_num);
         // printf("Allocation %d\tCLOCK %d us\n", i+1, dur);
-        printf("Allocation %d\tCLOCK %d ms\n", i+1, dur);
+        printf("Allocation %d\tCLOCK %d ms\n", i+10, dur);
     }
 }
 
