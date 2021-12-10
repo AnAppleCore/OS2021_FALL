@@ -6,8 +6,8 @@ namespace proj3 {
         if (--count < 0) {
             cv.wait(loc);
         }
-
     }
+    
     void Semaphore::V() {
         std::unique_lock<std::mutex> loc(this -> m);
         if (++count <= 0) {
