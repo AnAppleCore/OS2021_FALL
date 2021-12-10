@@ -225,7 +225,7 @@ namespace proj3 {
             in_memory = false;
             //virtual page is first used
             if (int(this -> page_map[array_id].size()) == this -> num_max_pages[array_id]) {
-                //throw std::runtime_error("Array List exceeds the allocated space!");
+                throw std::runtime_error("Array List " + std::to_string(array_id)+" exceeds the allocated space!");
             }
         } else if (this -> page_map[array_id][virtual_page_id] == -1) {
             in_memory = false;
@@ -296,7 +296,11 @@ namespace proj3 {
             this -> page_map[array_id] = empty;
             in_memory = false;
         } else if (this -> page_map[array_id].count(virtual_page_id) == 0){
+            //virtual page is first used
             in_memory = false;
+            if (int(this -> page_map[array_id].size()) == this -> num_max_pages[array_id]) {
+                throw std::runtime_error("Array List " + std::to_string(array_id)+" exceeds the allocated space!");
+            }
         } else if (this -> page_map[array_id][virtual_page_id] == -1) {
             in_memory = false;
         }
