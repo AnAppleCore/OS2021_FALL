@@ -11,13 +11,13 @@ namespace proj3 {
     }
     int ArrayList::Read (unsigned long idx){
         //read the value in the virtual index of 'idx' from mma's memory space
-        return this -> mma -> ReadPage(this -> array_id, idx / PageSize, idx % PageSize);
+        return mma -> ReadPage(this -> array_id, idx / PageSize, idx % PageSize);
     }
     void ArrayList::Write (unsigned long idx, int value){
         //write 'value' in the virtual index of 'idx' into mma's memory space
-        this -> mma -> WritePage(this -> array_id, idx/PageSize, idx % PageSize, value);
+        mma -> WritePage(this -> array_id, idx/PageSize, idx % PageSize, value);
     }
     ArrayList::~ArrayList(){
-        this -> mma -> Release(this);
+        mma -> Release(this);
     }
 } // namespace: proj3
