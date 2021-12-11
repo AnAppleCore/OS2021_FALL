@@ -1,19 +1,9 @@
 #ifndef MEMORY_MANAGER_H_
 #define MEMORY_MANAGER_H_
-
-#include <assert.h>
-#include <stdio.h>
 #include <map>
-#include <mutex>
 #include <queue>
 #include <string>
-#include <cstdlib>
-#include <cstdio>
 #include <vector>
-#include <fstream>
-#include <iostream>
-#include <condition_variable>
-
 #include "semaphore.h"
 
 #define PageSize 1024
@@ -26,7 +16,6 @@ public:
     int& operator[] (unsigned long);
     void WriteDisk(std::string);
     void ReadDisk(std::string);
-    void Clear();
 private:
     int mem[PageSize];
 };
@@ -42,7 +31,6 @@ private:
     int holder; //page holder id (array_id)
     int virtual_page_id; // page virtual #
     /*add your extra states here freely for implementation*/
-
 };
 
 class ArrayList;
