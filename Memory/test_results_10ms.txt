@@ -5,15 +5,15 @@ Executing tests from //:q1
 [----------] Global test environment set-up.
 [----------] 3 tests from Q1
 [ RUN      ] Q1.task1
-[       OK ] Q1.task1 (25 ms)
+[       OK ] Q1.task1 (446 ms)
 [ RUN      ] Q1.task2
-[       OK ] Q1.task2 (844 ms)
+[       OK ] Q1.task2 (53561 ms)
 [ RUN      ] Q1.task3
-[       OK ] Q1.task3 (22 ms)
-[----------] 3 tests from Q1 (891 ms total)
+[       OK ] Q1.task3 (141405 ms)
+[----------] 3 tests from Q1 (195413 ms total)
 
 [----------] Global test environment tear-down
-[==========] 3 tests from 1 test suite ran. (891 ms total)
+[==========] 3 tests from 1 test suite ran. (195413 ms total)
 [  PASSED  ] 3 tests.
 exec ${PAGER:-/usr/bin/less} "$0" || exit 1
 Executing tests from //:q2
@@ -22,15 +22,15 @@ Executing tests from //:q2
 [----------] Global test environment set-up.
 [----------] 3 tests from Q2
 [ RUN      ] Q2.task1
-[       OK ] Q2.task1 (26 ms)
+[       OK ] Q2.task1 (442 ms)
 [ RUN      ] Q2.task2
-[       OK ] Q2.task2 (908 ms)
+[       OK ] Q2.task2 (53509 ms)
 [ RUN      ] Q2.task3
-[       OK ] Q2.task3 (17 ms)
-[----------] 3 tests from Q2 (952 ms total)
+[       OK ] Q2.task3 (108617 ms)
+[----------] 3 tests from Q2 (162569 ms total)
 
 [----------] Global test environment tear-down
-[==========] 3 tests from 1 test suite ran. (952 ms total)
+[==========] 3 tests from 1 test suite ran. (162569 ms total)
 [  PASSED  ] 3 tests.
 exec ${PAGER:-/usr/bin/less} "$0" || exit 1
 Executing tests from //:q3
@@ -39,21 +39,21 @@ Executing tests from //:q3
 [----------] Global test environment set-up.
 [----------] 1 test from Q3
 [ RUN      ] Q3.task2
-1 FIFO 946 ms	CLOCK 879 ms
-2 FIFO 863 ms	CLOCK 847 ms
-3 FIFO 861 ms	CLOCK 847 ms
-4 FIFO 868 ms	CLOCK 863 ms
-5 FIFO 841 ms	CLOCK 834 ms
-6 FIFO 868 ms	CLOCK 851 ms
-7 FIFO 843 ms	CLOCK 860 ms
-8 FIFO 850 ms	CLOCK 856 ms
-9 FIFO 873 ms	CLOCK 847 ms
-10 FIFO 863 ms	CLOCK 847 ms
-[       OK ] Q3.task2 (17216 ms)
-[----------] 1 test from Q3 (17216 ms total)
+1 FIFO 53547 ms	CLOCK 53621 ms
+2 FIFO 53591 ms	CLOCK 53568 ms
+3 FIFO 53575 ms	CLOCK 53557 ms
+4 FIFO 53614 ms	CLOCK 53564 ms
+5 FIFO 53423 ms	CLOCK 53507 ms
+6 FIFO 53505 ms	CLOCK 53526 ms
+7 FIFO 53511 ms	CLOCK 53535 ms
+8 FIFO 53588 ms	CLOCK 53531 ms
+9 FIFO 53559 ms	CLOCK 53544 ms
+10 FIFO 53579 ms	CLOCK 53584 ms
+[       OK ] Q3.task2 (1071046 ms)
+[----------] 1 test from Q3 (1071046 ms total)
 
 [----------] Global test environment tear-down
-[==========] 1 test from 1 test suite ran. (17216 ms total)
+[==========] 1 test from 1 test suite ran. (1071046 ms total)
 [  PASSED  ] 1 test.
 exec ${PAGER:-/usr/bin/less} "$0" || exit 1
 Executing tests from //:q4
@@ -62,20 +62,20 @@ Executing tests from //:q4
 [----------] Global test environment set-up.
 [----------] 1 test from Q4
 [ RUN      ] Q4.task4
-Allocation 10	CLOCK 410 ms
-Allocation 11	CLOCK 444 ms
-Allocation 12	CLOCK 458 ms
-Allocation 13	CLOCK 436 ms
-Allocation 14	CLOCK 441 ms
-Allocation 15	CLOCK 415 ms
-Allocation 16	CLOCK 462 ms
-Allocation 17	CLOCK 486 ms
-Allocation 18	CLOCK 435 ms
-Allocation 19	CLOCK 464 ms
-Allocation 20	CLOCK 458 ms
-[       OK ] Q4.task4 (4915 ms)
-[----------] 1 test from Q4 (4915 ms total)
+Thread # 10	CLOCK 1731 ms
+Thread # 11	CLOCK 2337 ms
+Thread # 12	CLOCK 2877 ms
+Thread # 13	CLOCK 4267 ms
+Thread # 14	CLOCK 4780 ms
+Thread # 15	CLOCK 5866 ms
+Thread # 16	CLOCK 8302 ms
+Thread # 17	CLOCK 14321 ms
+Thread # 18	CLOCK 22674 ms
+Thread # 19	CLOCK 102280 ms
+Thread # 20	CLOCK 1204060 ms
+[       OK ] Q4.task4 (1373502 ms)
+[----------] 1 test from Q4 (1373502 ms total)
 
 [----------] Global test environment tear-down
-[==========] 1 test from 1 test suite ran. (4915 ms total)
+[==========] 1 test from 1 test suite ran. (1373502 ms total)
 [  PASSED  ] 1 test.
