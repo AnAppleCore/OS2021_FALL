@@ -20,7 +20,7 @@ class Q4 : public ::testing::Test {
     range = 10;
     for (int i=10; i<=10+range; i++) {
         // Use CLOCk algorithm as replacement policy
-        mma_clock.push_back(new proj3::MemoryManager(i, CLOCK, true));
+        mma_clock.push_back(new proj3::MemoryManager(i, CLOCK, false));
     }
     
     workload_sz_4 = 2000;

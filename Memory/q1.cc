@@ -16,7 +16,7 @@ class Q1 : public ::testing::Test {
  protected:
   void SetUp() override {
     // Use FIFO replacement policy
-    mma = new proj3::MemoryManager(10, FIFO, true);
+    mma = new proj3::MemoryManager(10, FIFO, false);
     workload_sz_1 = 4000;
     workload_sz_2 = 2000;
     workload_sz_3 = 100;

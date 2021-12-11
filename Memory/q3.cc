@@ -20,9 +20,9 @@ class Q3 : public ::testing::Test {
     range = 10;
     for (int i=1; i<=range; i++) {
         // Use FIFO Algorithm as replacement policy
-        mma.push_back(new proj3::MemoryManager(i, FIFO, true));
+        mma.push_back(new proj3::MemoryManager(i, FIFO, false));
         // Use CLOCk algorithm as replacement policy
-        mma_clock.push_back(new proj3::MemoryManager(i, CLOCK, true));
+        mma_clock.push_back(new proj3::MemoryManager(i, CLOCK, false));
     }
     
     workload_sz_2 = 2000;

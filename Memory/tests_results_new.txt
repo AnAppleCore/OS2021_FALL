@@ -1,0 +1,81 @@
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //:q1
+-----------------------------------------------------------------------------
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from Q1
+[ RUN      ] Q1.task1
+[       OK ] Q1.task1 (25 ms)
+[ RUN      ] Q1.task2
+[       OK ] Q1.task2 (844 ms)
+[ RUN      ] Q1.task3
+[       OK ] Q1.task3 (22 ms)
+[----------] 3 tests from Q1 (891 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (891 ms total)
+[  PASSED  ] 3 tests.
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //:q2
+-----------------------------------------------------------------------------
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from Q2
+[ RUN      ] Q2.task1
+[       OK ] Q2.task1 (26 ms)
+[ RUN      ] Q2.task2
+[       OK ] Q2.task2 (908 ms)
+[ RUN      ] Q2.task3
+[       OK ] Q2.task3 (17 ms)
+[----------] 3 tests from Q2 (952 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (952 ms total)
+[  PASSED  ] 3 tests.
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //:q3
+-----------------------------------------------------------------------------
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Q3
+[ RUN      ] Q3.task2
+1 FIFO 946 ms	CLOCK 879 ms
+2 FIFO 863 ms	CLOCK 847 ms
+3 FIFO 861 ms	CLOCK 847 ms
+4 FIFO 868 ms	CLOCK 863 ms
+5 FIFO 841 ms	CLOCK 834 ms
+6 FIFO 868 ms	CLOCK 851 ms
+7 FIFO 843 ms	CLOCK 860 ms
+8 FIFO 850 ms	CLOCK 856 ms
+9 FIFO 873 ms	CLOCK 847 ms
+10 FIFO 863 ms	CLOCK 847 ms
+[       OK ] Q3.task2 (17216 ms)
+[----------] 1 test from Q3 (17216 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (17216 ms total)
+[  PASSED  ] 1 test.
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //:q4
+-----------------------------------------------------------------------------
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Q4
+[ RUN      ] Q4.task4
+Allocation 10	CLOCK 410 ms
+Allocation 11	CLOCK 444 ms
+Allocation 12	CLOCK 458 ms
+Allocation 13	CLOCK 436 ms
+Allocation 14	CLOCK 441 ms
+Allocation 15	CLOCK 415 ms
+Allocation 16	CLOCK 462 ms
+Allocation 17	CLOCK 486 ms
+Allocation 18	CLOCK 435 ms
+Allocation 19	CLOCK 464 ms
+Allocation 20	CLOCK 458 ms
+[       OK ] Q4.task4 (4915 ms)
+[----------] 1 test from Q4 (4915 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4915 ms total)
+[  PASSED  ] 1 test.
