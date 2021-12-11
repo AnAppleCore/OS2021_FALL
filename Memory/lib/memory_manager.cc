@@ -33,7 +33,6 @@ namespace proj3 {
             f = fopen(filename.c_str(),"wb");
             fwrite(mem, sizeof(int), PageSize, f);
             fclose(f);
-            return;
         } else {
             fread(mem, sizeof(int), PageSize, f);
             fclose(f);
@@ -204,6 +203,7 @@ namespace proj3 {
             in_memory = false;
             //virtual page is first used
             if (int(page_map[array_id].size()) == num_max_pages[array_id]) {
+                data_lock.unlock();
                 throw std::runtime_error("Array List " + std::to_string(array_id)+" exceeds the allocated space!");
             }
         } else if (page_map[array_id][virtual_page_id] == -1) {
@@ -275,6 +275,7 @@ namespace proj3 {
             //virtual page is first used
             in_memory = false;
             if (int(page_map[array_id].size()) == num_max_pages[array_id]) {
+                data_lock.unlock();
                 throw std::runtime_error("Array List " + std::to_string(array_id)+" exceeds the allocated space!");
             } 
         } else if (page_map[array_id][virtual_page_id] == -1) {
