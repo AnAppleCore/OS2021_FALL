@@ -21,7 +21,7 @@ namespace proj4 {
     Status MmaServer::Release (ServerContext* context, const ReleaseRequest*   request, ReleaseReply* reply) {
         size_t page_used = mma->Release(request->array_id());
         this->server_lock.lock();
-        total_vir_page_num += page_used;
+        total_vir_page_num -= page_used;
         this->server_lock.unlock();
         return Status::OK;
     }
@@ -50,7 +50,7 @@ namespace proj4 {
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
         mma_server = std::unique_ptr<Server> (builder.BuildAndStart());
-        std::cout << "Server listening on " << server_address << std::endl;
+        // std::cout << "Server listening on " << server_address << std::endl;
         mma_server->Wait();
     }
 
@@ -59,7 +59,7 @@ namespace proj4 {
     }
 
     void ShutdownServer() {
-        std::cout << "Server shutdown " << std::endl;
+        // std::cout << "Server shutdown " << std::endl;
         mma_server->Shutdown();
     }
 

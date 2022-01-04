@@ -16,8 +16,8 @@ namespace proj4 {
             if (status.ok()) {
                 return new ArrayList(sz, this, reply.array_id());
             } else {
-                // wait till allocation succeed
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                // wait untill allocation succeed
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
         }
     }
