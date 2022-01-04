@@ -30,7 +30,7 @@ In this project, you do not have to manually generate and compile the protobuf's
 
 ## Codebase Introduction
 
-The basic workload in this project is similar to the ones in project 3. The only difference is that the application `Allocate` and `Free` an `ArrayList` via your gRPC client instead of the `mma` directly. Similarly, an `ArrayList` should `read` / `write` its corresponding memory via the client. On the other hand, each test will set up a gRPC server initially listening to the local port 50051. This server will create a `mma` instance in its lifetime to manage local memory space. Your gRPC server should support two basic management interfaces: `RunServerUL` for server setup and `ShutdownServer` to close the server. We provide a basic skeleton of client/server in `mma_client.h` and `mma_server.h`. You can find more interfaces utilization examples in `mma_test.cc`.
+The basic workload in this project is similar to the ones in project 3. The only difference is that the application `Allocate` and `Free` an `ArrayList` via your gRPC client instead of the `mma` directly. Similarly, an `ArrayList` should `read` / `write` its corresponding memory via the client. **On the other hand, each test will set up a gRPC server initially listening to the local port 50051. This server will create a `mma` instance in its lifetime to manage local memory space. Your gRPC server should support two basic management interfaces: `RunServerUL` for server setup and `ShutdownServer` to close the server.** We provide a basic skeleton of client/server in `mma_client.h` and `mma_server.h`. You can find more interfaces utilization examples in `mma_test.cc`.
 
 
 ## TODO
