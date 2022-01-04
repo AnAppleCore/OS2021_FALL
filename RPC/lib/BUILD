@@ -33,6 +33,7 @@ cc_library(
         "@com_github_grpc_grpc//:grpc++",
         "@com_github_grpc_grpc//:grpc++_reflection",
         "//proto:mma_grpc",
+        "semaphore",
     ],
 )
 
@@ -44,4 +45,24 @@ cc_library(
     hdrs = [
         "utils.h",
         ],
+)
+
+cc_library(
+    name = "semaphore",
+    srcs = [
+        "semaphore.cc",
+        ],
+    hdrs = [
+        "semaphore.h",
+        ],
+	visibility = [
+		"//visibility:public",
+	],
+    copts = [
+        "-O3",
+        "-std=c++11",
+    ],
+	linkopts = [
+        "-pthread",
+    ],
 )
